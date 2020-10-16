@@ -21,11 +21,11 @@ What it does
   - It will be converted to a proper citation
   - This way you can work with your manuscript even without a connection to LibreOffice.
   
- 
-<img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-32.png">
+<img width=“300” src="Readme_images/Bildschirmfoto vom 2020-10-16 20-32-00.png"> 
+<img width=“300” src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-32.png">
 
-<img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-55.png">
+<img width=“300” src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-55.png">
 
-<img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-31-34.png">
+<img width=“300” src="Readme_images/Bildschirmfoto vom 2020-10-16 20-31-34.png">
 
-<img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-32-00.png">
+
