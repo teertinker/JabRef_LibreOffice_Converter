@@ -23,3 +23,9 @@ What it does
   
  
 <img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-32.png">
+
+<img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-55.png">
+
+<img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-31-34.png">
+
+<img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-32-00.png">
