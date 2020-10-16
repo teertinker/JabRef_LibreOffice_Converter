@@ -20,3 +20,6 @@ What it does
   - You can add references by using the \cite{key} function of JabRef (Press: CTRL+K in JabRef). 
   - It will be converted to a proper citation
   - This way you can work with your manuscript even without a connection to LibreOffice.
+  
+ 
+<img src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-32.png">
