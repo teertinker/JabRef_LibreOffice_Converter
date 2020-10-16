@@ -23,13 +23,16 @@ What it does
   
   
 Pictures
-============  
-  
+ 
+A manuscript:  
 <img width=“300” src="Readme_images/Bildschirmfoto vom 2020-10-16 20-32-00.png"> 
+
+Convert to text code:
 <img width=“300” src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-32.png">
 
 <img width=“300” src="Readme_images/Bildschirmfoto vom 2020-10-16 20-25-55.png">
 
+And convert back to JabRef Reference
 <img width=“300” src="Readme_images/Bildschirmfoto vom 2020-10-16 20-31-34.png">
-
+... you just need to refresh the database from within JabRef now.
 
