@@ -16,4 +16,5 @@ What it does
   - now you can use every text processor
 - Convert the text pattern to a JabRef reference
   - you can create a proper reference list regardless which word processor was used before
-- Special feature: You can add references by using the \cite{key} function of JabRef (Press: CTRL+K in JabRef). It will be converter to a proper citation.
+- Special feature: 
+  - You can add references by using the \cite{key} function of JabRef (Press: CTRL+K in JabRef). It will be converter to a proper citation.
