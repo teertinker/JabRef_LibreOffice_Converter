@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="Module1" script:language="StarBasic" script:moduleType="normal">REM  *****  BASIC  *****
+
+private sSelection as string	&apos;Selected text
+private oDoc as object			&apos;Points to the current document
+private oRefMarks as object		&apos;Document references
+
+private b as integer
+private dia As Object
+private frm As Object
+
+&apos;************************* Replace JabRef reference field with cite key***************************
+	&apos;example  Jabref field--&gt;\cite{_1_Mehringer965} 
+Sub Main	
+
+
+	BasicLibraries.LoadLibrary(&quot;JabRefConverterLib&quot;)
+	DialogLibraries.LoadLibrary(&quot;JabRefConverterLib&quot;)
+	frm = DialogLibraries.JabRefConverterLib.JabRefConvert
+	dia = CreateUnoDialog(frm)
+	dia.Execute()
+End Sub
+
+
+	
+Sub FromTextToReference
+Dim SearchDesc As Object
+Dim Doc As Object
+ dim j as integer &apos; counter for message box
+  dim l as integer &apos; counter for message box 
+   dim k as integer &apos; counter for message box 
+
+Doc = ThisComponent
+
+Dim SearchDescRegExp As Object  
+SearchDescRegExp = Doc.createSearchDescriptor
+SearchDescRegExp.SearchString = &quot;\\cite\{[^\}]+\}&quot;
+SearchDescRegExp.SearchRegularExpression = True
+Found = Doc.findFirst (SearchDescRegExp)
+
+
+J=0
+l=0
+k=0
+
+
+b=100
+
+&apos; b necessary for plain \cite{key} to prevent a mix up with existing jabref citations because jabref has an internal identifier for every instance of a citation
+&apos; eg. JR_cite_1_Simmel ...JR_cite0_1_Simmel  .... 
+&apos; by using b we start with JR_cite100_1_Simmel to prevent double usage. 
+
+
+Do Until IsNull(Found)
+	Controller = Doc.CurrentController
+	VC = Controller.ViewCursor
+	VC.gotoRange(Found,False)
+    subEventReference(j,l,k)
+    Found = Doc.findNext( Found.End, SearchDescRegExp)
+Loop
+If Not IsNull(dia) then
+       dia.endExecute()
+   End If
+Msgbox (&quot;Conversion to JabRef Reference successful &quot; &amp; chr(13) &amp; + CStr(k) + &quot; (in-text) citations &quot;  &amp; chr(13) &amp; + CStr(j) + &quot; empty citations &quot; &amp; chr(13) &amp; + CStr(l) + &quot; manually added \cite{keys} &quot; &amp; chr(13) &amp;   chr(13) &amp; &quot; Now you can refresh the fields using Jabref. &quot;, ,&quot;OK&quot;)
+
+End Sub
+
+
+
+Sub FromReferenceToText
+ dim temp as string
+
+
+ Dim i As Integer, oRefmarks, oRefmarkNames()
+ dim j as integer
+  dim l as integer
+ 
+  oRefmarks = ThisComponent.getReferenceMarks()
+  oRefmarkNames = oRefmarks.getElementNames()
+
+
+j=0
+l=0 
+
+&apos;  insert a string at every reference mark
+For i = 0 To Ubound( oRefmarkNames )
+ref = oRefmarkNames(i)
+If instr(ref, &quot;JR_cite&quot;) Then
+  temp=ref
+   if left(temp,7)=&quot;JR_cite&quot; then
+       temp = mid(temp,8)
+   end if
+
+if instr(temp, &quot;_3_&quot;)=0 Then
+anchor = oRefmarks.getByName( ref).getanchor
+rr= anchor.gettext.createtextcursorbyrange(anchor)
+rr.string=&quot;\cite{&quot; +temp + &quot;}&quot;
+  J=j+1
+else
+&apos; for empty citations.	
+anchor = oRefmarks.getByName( ref).getanchor
+rr= anchor.gettext.createtextcursorbyrange(anchor)
+rr.string=&quot;\cite{&quot; +temp + &quot;}&quot;
+  l=l+1	
+end if
+
+End if
+Next
+
+&apos;problem: empty citations don&apos;t get disposed.
+	&apos; solution: a) dispose all remaining jabref references. in a second loop
+For i = 0 To Ubound( oRefmarkNames )
+  ref = oRefmarkNames(i)
+    If instr(ref(i), &quot;JR_cite&quot;) Then
+	On Error Resume Next 
+ 	oRefmarks.getByName( ref ).dispose()
+	
+
+End if
+Next
+If Not IsNull(dia) then
+       dia.endExecute()
+   End If
+Msgbox (&quot;Conversion to plain text code successful &quot;  &amp; chr(13) &amp; + CStr(j) + &quot; (in-text) citations &quot;  &amp; chr(13) &amp; CStr(l) + &quot; empty citations &quot;, ,&quot;OK&quot;)
+
+
+End Sub 
+
+
+
+&apos;************************* Create a reference that JabRef can process ***************************
+	&apos;example \cite{_1_Mehringer965}-&gt; to Jabref field
+	&apos;example \cite{Mehringer965}-&gt; to JabRef field
+Sub subEventReference(j,l,k as integer)
+dim oRefField as object
+ Dim i As Integer, oRefmarks, oRefmarkNames()
+
+ 
+oDoc = ThisComponent
+oRefMarks = oDoc.Referencemarks
+oRefmarkNames = oRefmarks.getElementNames()
+
+
+oRefField = oDoc.createInstance(&quot;com.sun.star.text.ReferenceMark&quot;)
+oSel = oDoc.getCurrentSelection().getByIndex(0)
+	if left(oSel.getString,6)=&quot;\cite{&quot; then
+		sSelection = &quot;JR_cite&quot;+mid(oSel.getString,7)
+		sSelection = left (sSelection,len(sSelection)-1)
+					&apos; just count empty citations
+					if InStr(oSel.getString, &quot;_3_&quot;)&lt;&gt;0 then
+					 j=j+1
+					end if
+					if InStr(oSel.getString, &quot;_2_&quot;)&lt;&gt;0 or InStr(oSel.getString, &quot;_1_&quot;) then
+					 k=k+1
+					end if
+
+
+&apos;	routine to handle plain \cite{key} -&gt; ad an unique identifiy (a) 
+
+	     if InStr(oSel.getString, &quot;_1_&quot;)=0 and InStr(oSel.getString, &quot;_2_&quot;)=0 and InStr(oSel.getString, &quot;_3_&quot;)=0 then
+	   	    sSelection = &quot;JR_cite&quot;+CStr(b)+&quot;_1_&quot;+mid(oSel.getString,7)
+			sSelection = left (sSelection,len(sSelection)-1)
+
+			&apos; routine to prevent doubling of the same JR_cite[b]
+				For i = 0 To Ubound( oRefmarkNames )
+				If instr(oRefmarkNames(i),sSelection) Then
+				
+				 b=b+1
+				 sSelection = &quot;JR_cite&quot;+CStr(b)+&quot;_1_&quot;+mid(oSel.getString,7)
+				 sSelection = left (sSelection,len(sSelection)-1)
+				End if
+	    		Next
+		
+			l=l+1
+	   
+	   
+	     end if
+
+
+	end if
+subCreate(oRefField,sSelection)
+
+End sub
+
+&apos;********************* Create the field (sub routine) ***********************
+Sub subCreate(oField as object, sText as string)
+dim sRefname as string
+oField.setName(sText, oRefField)
+oDoc.currentController.ViewCursor.Text.insertTextContent(oDoc.currentController.ViewCursor, oField, True)
+End sub
+
+
+
+
+
+</script:module>
