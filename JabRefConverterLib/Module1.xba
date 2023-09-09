@@ -62,7 +62,7 @@ Loop
 If Not IsNull(dia) then
        dia.endExecute()
    End If
-Msgbox (&quot;Conversion to JabRef Reference successful &quot; &amp; chr(13) &amp; + CStr(k) + &quot; (in-text) citations &quot;  &amp; chr(13) &amp; + CStr(j) + &quot; empty citations &quot; &amp; chr(13) &amp; + CStr(l) + &quot; manually added \cite{keys} &quot; &amp; chr(13) &amp;   chr(13) &amp; &quot; Now you can refresh the fields using Jabref. &quot;, ,&quot;OK&quot;)
+Msgbox (&quot;Conversion to JabRef Reference successful &quot; &amp; chr(13) &amp; + CStr(k) + &quot; (in-text) citations &quot;  &amp; chr(13) &amp; + CStr(j) + &quot; empty citations &quot; &amp; chr(13) &amp; + CStr(l) + &quot; manually added \cite{keys} &quot; &amp; chr(13) &amp;   chr(13) &amp; &quot; Now you can refresh the fields using Jabref. &quot;,0 ,&quot;OK&quot;)
 
 End Sub
 
@@ -185,11 +185,26 @@ End sub
 
 &apos;********************* Create the field (sub routine) ***********************
 Sub subCreate(oField as object, sText as string)
-dim sRefname as string
-oField.setName(sText, oRefField)
-oDoc.currentController.ViewCursor.Text.insertTextContent(oDoc.currentController.ViewCursor, oField, True)
-End sub
+ Dim oText As Object
+ Dim oSelection As Object
 
+&apos;Referenzfeld an betreffender Stelle einfügen
+oField.setName(sText, oField)
+
+ &apos;get selection to handle empty citations
+   oSelection = oDoc.getCurrentSelection()
+   oText = oSelection.getByIndex(0)
+  
+   if InStr(oText.getString, &quot;_3_&quot;)&lt;&gt;0 then
+    &apos;selektierten Text löschen.// Warum löschen? Weil sonst empty Citations nicht geleert werden.
+      oDoc.currentController.ViewCursor.Text.insertTextContent(oDoc.currentController.ViewCursor, oField, false)
+     oText.String = &quot;&quot;
+    
+   else
+     oDoc.currentController.ViewCursor.Text.insertTextContent(oDoc.currentController.ViewCursor, oField, true)
+ 
+   end if     
+End sub
 
 
 
