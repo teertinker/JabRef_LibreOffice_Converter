@@ -1,6 +1,8 @@
 # JabRef_LibreOffice_Converter
 A LibreOffice extension that converts JabRef references to plain text code and vice versa so that you can use your references with MS Office and other software.
 
+Currently the newer version seems to be broken, I advice to use the old version.
+
 HowTo
 =====
 - Donwload & install the extension in LibreOffice (**JabRefConverter.oxt**)
