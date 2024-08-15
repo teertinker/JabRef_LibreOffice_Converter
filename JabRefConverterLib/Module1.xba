@@ -184,27 +184,36 @@ subCreate(oRefField,sSelection)
 End sub
 
 &apos;********************* Create the field (sub routine) ***********************
+&apos;Sub subCreate(oField as object, sText as string)
+&apos;dim sRefname as string
+&apos;oField.setName(sText, oRefField)
+&apos;oDoc.currentController.ViewCursor.Text.insertTextContent(oDoc.currentController.ViewCursor, oField, True)
+&apos;End sub
+
+&apos;********************* Create the field (sub routine) ***********************
 Sub subCreate(oField as object, sText as string)
- Dim oText As Object
- Dim oSelection As Object
+    Dim oText As Object
+    Dim oSelection As Object
 
-&apos;Referenzfeld an betreffender Stelle einfügen
-oField.setName(sText, oField)
+    &apos; Setzt den Namen des Feldes
+    oField.setName(sText)
 
- &apos;get selection to handle empty citations
-   oSelection = oDoc.getCurrentSelection()
-   oText = oSelection.getByIndex(0)
-  
-   if InStr(oText.getString, &quot;_3_&quot;)&lt;&gt;0 then
-    &apos;selektierten Text löschen.// Warum löschen? Weil sonst empty Citations nicht geleert werden.
-      oDoc.currentController.ViewCursor.Text.insertTextContent(oDoc.currentController.ViewCursor, oField, false)
-     oText.String = &quot;&quot;
-    
-   else
-     oDoc.currentController.ViewCursor.Text.insertTextContent(oDoc.currentController.ViewCursor, oField, true)
- 
-   end if     
-End sub
+    &apos; Aktuelle Auswahl im Dokument erhalten
+    oSelection = oDoc.getCurrentSelection()
+    oText = oSelection.getByIndex(0)
+
+    &apos; Prüfen, ob der Text &quot;_3_&quot; enthält
+    If InStr(oText.getString(), &quot;_3_&quot;) &lt;&gt; 0 Then
+        &apos; Löscht den selektierten Text, da dieser leer sein soll
+        oText.String = &quot;&quot;
+        
+       
+    End If
+
+    &apos; Fügt das Feld an der aktuellen Cursor-Position ein
+    oDoc.currentController.ViewCursor.Text.insertTextContent(oDoc.currentController.ViewCursor, oField, Not (InStr(oText.getString(), &quot;_3_&quot;) &lt;&gt; 0))
+End Sub
+
 
 
 
